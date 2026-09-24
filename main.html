@@ -2,7 +2,15 @@
 <html>
 
 <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
+        .hidden {
+            visibility: hidden;
+        }
+
         h1, h2 {
             text-align: center;
             margin-left: 250px;
@@ -54,6 +62,115 @@
             opacity: .4;
         }
 
+
+        .parent {
+            position: relative;
+            display: flex;
+            justify-content: space-evenly;
+            display: none;
+        }
+
+
+        .parent > div {
+            margin-left: 15%;
+            width: 250px;
+            max-height:500px;
+            overflow-y:auto;
+        
+        }
+     .parent > div::-webkit-scrollbar {
+            width: 6px;
+        }        
+        .parent > div::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .parent > div::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 6px;
+        }
+        .parent > div > div {
+            margin-left: 15%;
+            height:1500px;
+        }
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+        }
+                
+        #add {
+            position: fixed;
+            top: 92%;
+            left: 96%;
+        }
+         #AddTaskMenu {
+            position: fixed;
+            display: flex;
+            top: 50%;
+            left: 55%;
+            width: 50%;
+            height: 75vh;
+            background-color: #2C2C2E;
+            color: #EDE6D8;
+            border-radius: 10px;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+
+        #AddTaskMenu.show {
+            display: flex;
+        }
+
+
+        #AddTaskMenu p {
+            position: relative;
+            bottom: 20%;
+            width: 80%;
+            margin: 5px 0 0 0;
+            font-size: small;
+            text-align: left;
+        }
+
+        #AddTaskMenu input,
+        #AddTaskMenu #grouping {
+            position: relative;
+            bottom: 20%;
+            width: 80%;
+            border: 1px solid #888888;
+        }
+
+        #AddTaskMenu #createtask,
+        #AddTaskMenu #cancel {
+            position: relative;
+            width: 30%;
+            border: none;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #AddTaskMenu #createtask {
+            margin-bottom: 5px;
+            background-color: #888888;
+        }
+
+        #AddTaskMenu #cancel {
+            background-color: #e46767;
+        }
+        
+        .dropdownoptions {
+            position: relative;
+            bottom: 20%;
+            width: 80%;
+            display: none;
+        }
     </style>
 
     <title>Lists For You</title>
@@ -73,6 +190,46 @@
         <div id="taskDisplay">
             <p>Your tasks will appear here...</p>
         </div>
+
+    </div>    
+
+    <div class="parent">
+
+    <div id="list1">
+
     </div>
+
+    <div id="list2">
+
+    </div>
+    
+    <div id="list3">
+    </div>   
+        
+    </div>    
+
+  <div id="AddTaskMenu" class="hidden">
+            <p>Name: (*)</p>
+            <input type="text" id="name" placeholder="Enter task name...">
+            <p>Description: (*)</p>
+            <input type="text" id="description" placeholder="Enter task description..">
+            <p>Complete By: (*)</p>
+            <input type="text" id="due" placeholder="Enter desired completion date..">
+            <p>Select category: (*)</p>
+            <button onclick="dropDown()" id="grouping">Select category</button>
+            <div id="options" class="dropdownoptions">
+                <button onclick="selectcategory('Digital')">Digital</button>
+                <button onclick="selectcategory('Home')">Home</button>
+                <button onclick="selectcategory('School')">School</button>
+                <button onclick="selectcategory('Work')">Work</button>
+                <button onclick="selectcategory('Other')">Other</button>
+            </div>
+            <button id="createtask" onclick="createTask()">Add Task</button>
+            <button id="cancel" onclick="hideMenu()">Cancel</button>
+        </div>
+        <button id="add">
+            <img src="Images/add.png" alt="create task">
+        </button>
+
 </body>
 </html>

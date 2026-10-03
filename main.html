@@ -7,11 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        .hidden {
-            visibility: hidden;
-        }
-
-        h1, h2 {
+        h1,
+        h2 {
             text-align: center;
             margin-left: 250px;
             color: #EDE6D8;
@@ -25,6 +22,7 @@
             bottom: 0;
             font-size: medium;
         }
+
         body {
             background-color: #1C1C1E;
             font-family: Arial, Helvetica, sans-serif;
@@ -62,36 +60,29 @@
             opacity: .4;
         }
 
-
         .parent {
-            position: relative;
             display: flex;
-            justify-content: space-evenly;
-            display: none;
+            margin-left: 250px;
         }
 
-
-        .parent > div {
-            margin-left: 15%;
-            width: 250px;
-            max-height:500px;
-            overflow-y:auto;
-        
+        .parent>div {
+            flex: 1;
+            margin: 0 10px;
+            height: 70vh;
+            overflow-y: auto;
         }
-     .parent > div::-webkit-scrollbar {
+
+        .parent>div::-webkit-scrollbar {
             width: 6px;
-        }        
-        .parent > div::-webkit-scrollbar-track {
+        }
+
+        .parent>div::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .parent > div::-webkit-scrollbar-thumb {
+        .parent>div::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 6px;
-        }
-        .parent > div > div {
-            margin-left: 15%;
-            height:1500px;
         }
 
         button {
@@ -100,13 +91,14 @@
             cursor: pointer;
             display: flex;
         }
-                
+
         #add {
             position: fixed;
             top: 92%;
             left: 96%;
         }
-         #AddTaskMenu {
+
+        #AddTaskMenu {
             position: fixed;
             top: 50%;
             left: 55%;
@@ -163,23 +155,45 @@
         #AddTaskMenu #cancel {
             background-color: #e46767;
         }
-        
+
         .dropdownoptions {
             position: relative;
             bottom: 20%;
             width: 80%;
             display: none;
         }
+
+        .show {
+            display: block;
+        }
+
+        .card {
+            background-color: #05fcd3;
+            font-size: small;
+            color: #000000;
+        }
     </style>
 
     <title>Lists For You</title>
 </head>
 
+<template id="cardTemplate">
+
+    <div class="card">
+        <p class="cardTitle"></p>
+        <p class="cardDesc"></p>
+        <p class="cardDate"></p>
+        <button class="cardDelete">
+            <img src="images/delete.png">
+        </button>
+    </div>
+</template>
+
 <body>
     <div>
         <header id="top">
             <h1>Lists For You</h1>
-            <h2>Date: 1/1/26</h2>
+            <h2 id="date">Date: 1/1/26</h2>
         </header>
 
         <div id="leftBar">
@@ -187,48 +201,229 @@
         </div>
 
         <div id="taskDisplay">
-            <p>Your tasks will appear here...</p>
+            <p id="tempText">Your tasks will appear here...</p>
         </div>
 
-    </div>    
+    </div>
 
     <div class="parent">
 
-    <div id="list1">
+        <div id="list1">
 
-    </div>
-
-    <div id="list2">
-
-    </div>
-    
-    <div id="list3">
-    </div>   
-        
-    </div>    
-
-  <div id="AddTaskMenu" class="hidden">
-            <p>Name: (*)</p>
-            <input type="text" id="name" placeholder="Enter task name...">
-            <p>Description: (*)</p>
-            <input type="text" id="description" placeholder="Enter task description..">
-            <p>Complete By: (*)</p>
-            <input type="text" id="due" placeholder="Enter desired completion date..">
-            <p>Select category: (*)</p>
-            <button onclick="dropDown()" id="grouping">Select category</button>
-            <div id="options" class="dropdownoptions">
-                <button onclick="selectcategory('Digital')">Digital</button>
-                <button onclick="selectcategory('Home')">Home</button>
-                <button onclick="selectcategory('School')">School</button>
-                <button onclick="selectcategory('Work')">Work</button>
-                <button onclick="selectcategory('Other')">Other</button>
-            </div>
-            <button id="createtask" onclick="createTask()">Add Task</button>
-            <button id="cancel" onclick="hideMenu()">Cancel</button>
         </div>
-        <button id="add">
-            <img src="Images/add.png" alt="create task">
-        </button>
 
+        <div id="list2">
+
+        </div>
+
+        <div id="list3">
+        </div>
+
+    </div>
+
+    <div id="AddTaskMenu" class="hidden">
+        <p>Name: (*)</p>
+        <input type="text" id="name" placeholder="Enter task name...">
+        <p>Description: (*)</p>
+        <input type="text" id="description" placeholder="Enter task description..">
+        <p>Complete By: (*)</p>
+        <input type="date" id="due">
+        <p>Select category: (*)</p>
+        <button onclick="dropDown()" id="grouping">Select category</button>
+        <div id="options" class="dropdownoptions">
+            <button onclick="selectcategory('Digital')">Digital</button>
+            <button onclick="selectcategory('Home')">Home</button>
+            <button onclick="selectcategory('School')">School</button>
+            <button onclick="selectcategory('Work')">Work</button>
+            <button onclick="selectcategory('Other')">Other</button>
+        </div>
+        <button id="createtask" onclick="createTask()">Add Task</button>
+        <button id="cancel" onclick="hideMenu()">Cancel</button>
+    </div>
+    <button id="add">
+        <img src="Images/add.png" alt="create task">
+    </button>
+
+    <script>
+        const addTaskButton = document.getElementById("add");
+        let categories = ["Home", "Work", "School", "Digital", "Other"];
+        let tasks = [];
+
+        // Update and display the date
+        function updateDate() {
+            const date = new Date();
+            document.getElementById("date").innerText = date.toLocaleDateString();
+        }
+        updateDate();
+
+        // Creates task
+        function createTask() {
+            const title = document.getElementById("name").value;
+            const description = document.getElementById("description").value;
+            const due = document.getElementById("due").value;
+            const type = document.getElementById("grouping").innerText;
+
+            if (title == "" || description == "" || due == "" || type == "Select category") {
+                alert("Please fill in all fields!");
+            } else {
+                let newTask = {
+                    Title: title,
+                    Status: "Incomplete",
+                    Description: description,
+                    Due: due,
+                    Type: type,
+                };
+                tasks.push(newTask);
+                saveData(tasks);
+                hideMenu();
+                displayTask(newTask);
+            }
+        }
+
+        let cryptographicKey, salt;
+
+        // Create key (AI assisted function)
+        async function createKey(pass, salt) {
+            const base = await crypto.subtle.importKey(
+                "raw",
+                new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+
+            return crypto.subtle.deriveKey(
+                {name: "PBKDF2", salt, iterations: 600000, hash: "SHA-256"},
+                base, {name: "AES-GCM", length: 256}, false, ["encrypt", "decrypt"]);
+        }
+
+        // Save task (AI assisted function)
+        async function saveData(tasks) {
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const ciphertext = await crypto.subtle.encrypt(
+                {name: "AES-GCM", iv: iv},
+                cryptographicKey,
+                new TextEncoder().encode(JSON.stringify({tasks}))
+            );
+
+            localStorage.setItem("listsForYouVault", JSON.stringify({
+                salt: Array.from(salt),
+                iv: Array.from(iv),
+                data: Array.from(new Uint8Array(ciphertext))
+            }));
+        }
+
+        // Setup cryptography (AI assisted function)
+        async function setup() {
+            const pass = prompt("Choose a passphrase:");
+            salt = crypto.getRandomValues(new Uint8Array(16));
+            cryptographicKey = await createKey(pass, salt);
+        }
+
+        setup();
+
+        // Displays task
+        function displayTask(task) {
+            const card = document.getElementById("cardTemplate").content.cloneNode(true);
+            card.querySelector(".cardTitle").innerText = `Task: ${task.Title}`;
+            card.querySelector(".cardDesc").innerText = `Description: ${task.Description}`;
+            card.querySelector(".cardDate").innerText = `Complete By: ${task.Due}`;
+            card.querySelector(".cardDelete").onclick = function () {
+                deleteTask(task.Title);
+            }
+
+            const taskList1 = document.getElementById("list1");
+            const taskList2 = document.getElementById("list2");
+            const taskList3 = document.getElementById("list3");
+            const taskDiv = document.createElement("div");
+
+            const date = new Date();
+            date.setHours(0, 0, 0, 0)
+            const days = Math.round((new Date(task.Due) - date) / 86400000);
+
+            if (days <= 0) {
+                taskList1.appendChild(card);
+            } else if (days <= 7) {
+                taskList2.appendChild(card);
+            } else {
+                taskList3.appendChild(card);
+            }
+
+            document.getElementById("tempText").innerText = "";
+        }
+
+        // Refresh existing tasks
+        function redrawTasks() {
+            // Clears existing tasks
+            document.getElementById("list1").innerHTML = "";
+            document.getElementById("list2").innerHTML = "";
+            document.getElementById("list3").innerHTML = "";
+
+            for (let i = 0; i < tasks.length; i++) {
+                displayTask(tasks[i]);
+            }
+        }
+
+        // Delete task
+        function deleteTask(currentTask) {
+            for (let i = 0; i < tasks.length; i++) {
+                if (tasks[i].Title == currentTask) {
+                    tasks.splice(i, 1);
+                    break;
+                }
+            }
+            saveData(tasks);
+            redrawTasks();
+        }
+
+        // Displays categories 
+        function displayCategories() {
+            const sidebar = document.getElementById("leftBar");
+            sidebar.innerHTML = "";
+
+            for (let i = 0; i < categories.length; i++) {
+                const categoryBtn = document.createElement("button");
+                categoryBtn.className = "category";
+                categoryBtn.onclick = function () {filterByCategory(categories[i]);};
+                categoryBtn.innerHTML = `
+                    <img src="Images/${categories[i]}.png">
+                    <p>${categories[i]}</p>
+                `;
+                sidebar.appendChild(categoryBtn);
+            }
+        }
+        displayCategories();
+
+        // Filters by category
+        function filterByCategory(category) {
+            // Clears existing tasks
+            document.getElementById("list1").innerHTML = "";
+            document.getElementById("list2").innerHTML = "";
+            document.getElementById("list3").innerHTML = "";
+
+            for (let i = 0; i < tasks.length; i++) {
+                if (tasks[i].Type == category) {
+                    displayTask(tasks[i]);
+                }
+            }
+        }
+
+        // Hides the add task menu
+        function hideMenu() {
+            document.getElementById("AddTaskMenu").classList.remove("show");
+        }
+
+        // Displays the 'select category' dropdown
+        function dropDown() {
+            document.getElementById("options").classList.toggle("show");
+        }
+
+        function selectcategory(category) {
+            document.getElementById("grouping").innerText = category;
+            document.getElementById("options").classList.remove("show");
+        }
+
+        // Prompts add task menu
+        addTaskButton.addEventListener("click", function () {
+            document.getElementById("AddTaskMenu").classList.toggle("show");
+        });
+    </script>
 </body>
+
 </html>
